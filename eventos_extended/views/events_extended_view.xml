@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_service_event_tree">
+            <field name="name">view.service.event.tree</field>
+            <field name="model">events.extended</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="date_begin"/>
+                    <field name="date_end"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_service_event_form">
+            <field name="name">view.service.event.form</field>
+            <field name="model">events.extended</field>
+            <field name="priority" eval="16"/>
+            <field name="arch" type="xml">
+                <form string="Service Event">
+                    <header>
+                        <button string="Draft" type="object" name="action_draft" states="complete,done,cancel"/>
+                        <button string="Complete" type="object" name="action_complete" states="draft"
+                                class="oe_highlight"/>
+                        <button string="Invoiced" type="object" name="action_post" states="complete"
+                                class="oe_highlight"/>
+                        <button string="Cancel" type="object" name="action_cancel"
+                                states="draft,complete,done" groups="eventos_extended.group_approved"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_view_move" string="Invoices" class="oe_stat_button" icon="fa-pencil-square-o" states="done"/>
+                        </div>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="partner_id"/>
+                                <field name="hall_id"/>
+                                <label for="date_begin" string="Date" widget="derange"/>
+                                <div class="o_row">
+                                    <field name="date_begin" widget="derange" nolabel="1" class="oe_inline" required="1"/>
+                                    <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                                    <field name="date_end" widget="derange" nolabel="1" class="oe_inline" required="1"/>
+                                </div>
+                                <field name="catering"/>
+                            </group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="type_id"/>
+                                <field name="time"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="qty_chair"/>
+                            </group>
+                            <group>
+                                <field name="qty_desk"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="events_extended_ids"
+                                       attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
+                                    <tree editable="bottom">
+                                        <field name="events_extended_id" invisible="True"/>
+                                        <field name="product_id" widget="many2one_barcode"
+                                               domain="[('type', '=', 'service')]"/>
+                                        <field name="product_amount" sum="Total Amount"/>
+                                        <control>
+                                            <create name="add_product_control" string="Add a product"/>
+                                        </control>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <br/>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <div class="o_attachment_preview"/>
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids" groups="base.group_user"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids"/>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_service_event_kanban">
+            <field name="name">view.service.event.kanban</field>
+            <field name="model">events.extended</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column" group_delete="0" group_create="0"
+                        sample="1" default_group_by="state">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="state"/>
+                    <field name="date_begin"/>
+                    <field name="date_end"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row mb4">
+                                    <div class="col-6">
+                                        <strong>
+                                            <span>
+                                                <field name="name"/>
+                                            </span>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span>
+                                            <field name="partner_id"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <i class="fa fa-calendar"></i>
+                                        <strong>From</strong>
+                                        <field name="date_begin"/>
+                                    </div>
+                                    <div class="col-12">
+                                        <i class="fa fa-calendar"></i>
+                                        <strong>To</strong>
+                                        <field name="date_end"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span>
+                                            <field name="state" widget="state_selection"
+                                                   options="{'classes': {'draft': 'warning', 'complete': 'success', 'cancel':'danger'}}"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record model='ir.actions.act_window' id="action_service_event">
+            <field name="name">Service Event</field>
+            <field name="res_model">events.extended</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <menuitem name="Service Event" id="service_event_base_menu"/>
+
+        <menuitem name="Event" id="service_event_menu"
+                  parent="service_event_base_menu"
+                  action="action_service_event"
+                  sequence="3"/>
+    </data>
+</odoo>

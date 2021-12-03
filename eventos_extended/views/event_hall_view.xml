@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_event_hall_tree">
+            <field name="name">view.event.hall.tree</field>
+            <field name="model">event.hall</field>
+            <field name="arch" type="xml">
+                <tree string="Hall" editable="bottom">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model='ir.actions.act_window' id="action_event_hall">
+            <field name="name">Event Hall</field>
+            <field name="res_model">event.hall</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">['|',('active','=',False),('active','=',True)]</field>
+        </record>
+
+        <menuitem name="Hall" id="event_hall_menu"
+                  parent="service_event_base_menu"
+                  action="action_event_hall"
+                  sequence="10"/>
+
+    </data>
+</odoo>

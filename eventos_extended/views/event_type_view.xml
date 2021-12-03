@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_event_type_tree">
+            <field name="name">view.event.type.tree</field>
+            <field name="model">event.type</field>
+            <field name="arch" type="xml">
+                <tree string="Event Type" editable="bottom">
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model='ir.actions.act_window' id="action_event_type">
+            <field name="name">Event Type</field>
+            <field name="res_model">event.type</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">['|',('active','=',False),('active','=',True)]</field>
+        </record>
+
+        <menuitem name="Event Type" id="event_type_menu"
+                  parent="service_event_base_menu"
+                  action="action_event_type"
+                  sequence="20"/>
+    </data>
+</odoo>
